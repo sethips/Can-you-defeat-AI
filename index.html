@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Play with AI</title>
+</head>
+<body>
+    <tt><h1 style="text-align: center;text-transform:uppercase;">Can you defeat Artificial Intelligence</h1></tt>
+    <canvas id="x" width="1340" height="560"></canvas>    
+    <script>
+    var canvas;
+    var canvasContext;
+    var bX = 50;
+    var bY = 50;
+    var bsX = 17;
+    var bsY = 4;
+    var p1s = 0;
+    var p2s = 0;
+    const MAX_SCORE = 5;
+    var sws = false;
+    var pd1Y = 450;
+    var pd2Y = 450;
+    const PD_HEIGHT = 120;
+    const PD_WIDTH = 10;
+    function calculateMousePos(evt) {
+        var rect = canvas.getBoundingClientRect();
+        var root = document.documentElement;
+	var mouseX = evt.clientX - rect.left - root.scrollLeft;
+        var mouseY = evt.clientY - rect.top - root.scrollTop;
+        return {
+            x:mouseX,
+            y:mouseY
+        }
+    }
+    function handleMouseClick(evt) {
+        if(sws) {
+            p1s = 0;
+            p2s = 0;
+            sws = false;
+        }
+    }
+    window.onload = function() {
+        canvas = document.getElementById('x');
+        canvasContext = canvas.getContext('2d');
+        var framesPerSecond = 40;
+        setInterval(function() {
+            moveEverything();
+            drawEverything();    
+        }, 1000/framesPerSecond);
+        canvas.addEventListener('mousedown', handleMouseClick);
+        canvas.addEventListener('mousemove', 
+            function(evt){
+                var mousePos = calculateMousePos(evt);
+                pd1Y = mousePos.y - (PD_HEIGHT / 2);
+            });
+    }
+    function bReset() {
+        if(p1s >= MAX_SCORE || p2s >= MAX_SCORE){
+            sws = true;
+        }
+        bsX = -bsX
+        bX = canvas.width/2;
+        bY = canvas.height/2;
+    }
+    function computerMovement() {
+        var pd2YCenter = pd2Y + PD_HEIGHT / 2
+        if(pd2YCenter < bY - 35) {
+            pd2Y += 16;
+        }
+        else if(pd2YCenter > bY + 35){
+            pd2Y -= 16; 
+        }
+    }
+    function moveEverything() {
+        if(sws) {
+            return;
+        }
+        computerMovement();
+        bX += bsX;
+        if(bX < 0) {
+            if(bY > pd1Y && bY < pd1Y + PD_HEIGHT) {
+                bsX = -bsX;
+                var deltaY = bY - (pd1Y + PD_HEIGHT/2);
+                bsY = deltaY * 0.3;
+            }
+            else {
+                p2s ++;
+                bReset();
+            }
+        }
+        if(bX > canvas.width) {
+            if(bY > pd2Y && bY < pd2Y + PD_HEIGHT) {
+                bsX = -bsX;
+                var deltaY = bY - (pd2Y + PD_HEIGHT/2);
+                bsY = deltaY * 0.3;
+            }
+            else {
+                p1s ++;
+                bReset();
+            }
+        }
+        bY += bsY;
+        if(bY > canvas.height || bY < 0) {
+            bsY = -bsY;
+        }
+    }
+    function drawNet() {
+        for(var i=0; i < canvas.height; i+=40){
+            colorRect((canvas.width / 2) - 1, i, 2, 20, 'black');
+        }
+    }
+    function drawEverything() {
+        colorRect(0, 0, canvas.width, canvas.height, 'white');
+        if(sws) {
+            canvasContext.fillStyle = 'black'
+            if(p1s >= MAX_SCORE){
+                canvasContext.fillText("Congratulations, You defeated AI ", 350, 200);
+            }
+            else if(p2s >= MAX_SCORE) {
+                canvasContext.fillText("AI defeated you, better luck next time", 350, 200);
+            }
+            canvasContext.fillText("Click to continue", 350, 500);
+            return;
+        }
+        drawNet();
+        colorRect(0, pd1Y, PD_WIDTH, PD_HEIGHT, 'black');
+	colorRect(canvas.width - PD_WIDTH, pd2Y, PD_WIDTH, PD_HEIGHT, 'black');
+        colorCircle(bX, bY, 10, 'black');
+        canvasContext.fillText(p1s, 500, 500);
+        canvasContext.fillText(p2s, canvas.width - 200, 200);
+    }
+    function colorRect(leftX, topY, width, height, drawColor) {
+        canvasContext.fillStyle = drawColor;
+        canvasContext.fillRect(leftX, topY, width, height);
+    }
+    function colorCircle(centerX, centerY, radius, drawColor) {
+        canvasContext.fillStyle = drawColor;
+        canvasContext.beginPath();
+        canvasContext.arc(centerX, centerY, radius, 0, Math.PI*2, true);
+        canvasContext.fill();
+    }
+    </script>
+    <tt><p style="text-align:center">Follow me on <a style="text-decoration:none" href="http://github.com/abhinavsagar">this </a>if you need the source code or for viewing more such interesting projects.</p></tt>
+</body>
+</html>
