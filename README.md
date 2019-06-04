@@ -1,7 +1,7 @@
 # Can-you-defeat-AI
 
-Pong which can be played in the browser against an artificial agent written in HTML canvas. Play the live demo [here]
-(https://abhinavsagar.github.io/Can-you-defeat-AI/).
+Pong which can be played in the browser against an artificial agent written in HTML canvas. Play the live demo at
+https://abhinavsagar.github.io/Can-you-defeat-AI/ .
 
 ## TODO
 
